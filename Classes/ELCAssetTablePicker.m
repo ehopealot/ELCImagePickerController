@@ -29,7 +29,9 @@
     [tempArray release];
 	
 	UIBarButtonItem *doneButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneAction:)] autorelease];
-	[self.navigationItem setRightBarButtonItem:doneButtonItem];
+    UIBarButtonItem *selectAllButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(selectAllAction:)] autorelease];
+    NSArray *navigationItems = @[doneButtonItem, selectAllButtonItem];
+    [self.navigationItem setRightBarButtonItems:navigationItems];
 	[self.navigationItem setTitle:@"Loading..."];
 
     NSInteger count = self.assetGroup.numberOfAssets;
@@ -85,6 +87,19 @@
     
     [pool release];
 
+}
+
+- (void)selectAllAction:(id)sender
+{
+    NSMutableArray *selectedAssetsImages = [[[NSMutableArray alloc] init] autorelease];
+    NSArray *currentlyLoadedAssets = [self.elcAssets copy];
+    for (ELCAsset *asset in currentlyLoadedAssets)
+    {
+        if(asset != (id)[NSNull null]){
+           [selectedAssetsImages addObject:[asset asset]];
+        }
+    }
+    [(ELCAlbumPickerController*)self.parent selectedAssets:selectedAssetsImages];
 }
 
 - (void) doneAction:(id)sender {
