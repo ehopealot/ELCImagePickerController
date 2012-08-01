@@ -35,20 +35,19 @@
 
 - (void)elcImagePickerController:(ELCImagePickerController *)picker willFinishPickingThisManyMediaItems:(NSNumber *)number
 {
-    
     for (UIView *v in [scrollview subviews]) {
         [v removeFromSuperview];
     }
     workingFrame = scrollview.frame;
-	workingFrame.origin.x = 0;
+    workingFrame.origin.x = 0;
     [scrollview setPagingEnabled:YES];
-
     [self dismissModalViewControllerAnimated:YES];
+
 }
 
 - (void)elcImagePickerController:(ELCImagePickerController *)picker hasMediaWithInfo:(NSDictionary *)info
 {
-    dispatch_sync(dispatch_get_main_queue(), ^{
+    dispatch_async(dispatch_get_main_queue(), ^{
         UIImageView *imageview = [[UIImageView alloc] initWithImage:[info objectForKey:UIImagePickerControllerOriginalImage]];
         [imageview setContentMode:UIViewContentModeScaleAspectFit];
         imageview.frame = workingFrame;
