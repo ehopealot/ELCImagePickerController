@@ -36,7 +36,6 @@
 
             NSMutableDictionary *workingDictionary = [[NSMutableDictionary alloc] init];
             [workingDictionary setObject:[asset valueForProperty:ALAssetPropertyType] forKey:@"UIImagePickerControllerMediaType"];
-            [workingDictionary setObject:[UIImage imageWithCGImage:[[asset defaultRepresentation] fullScreenImage]] forKey:@"UIImagePickerControllerOriginalImage"];
             [workingDictionary setObject:[[asset valueForProperty:ALAssetPropertyURLs] valueForKey:[[[asset valueForProperty:ALAssetPropertyURLs] allKeys] objectAtIndex:0]] forKey:@"UIImagePickerControllerReferenceURL"];
             [workingDictionary setObject:asset forKey:@"ELCImagePickerControllerAsset"];
             if([delegate respondsToSelector:@selector(elcImagePickerController:hasMediaWithInfo:)]){
