@@ -24,11 +24,11 @@
 
 -(void)selectedAssets:(NSArray*)_assets {
     assets = _assets;
-    if ([delegate respondsToSelector:@selector(elcImagePickerController:willFinishPickingThisManyMediaItems:)]){
-        [self.delegate elcImagePickerController:self
-            willFinishPickingThisManyMediaItems:[NSNumber numberWithInt:_assets.count]];
-    }
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        if ([delegate respondsToSelector:@selector(elcImagePickerController:willFinishPickingThisManyMediaItems:)]){
+            [self.delegate elcImagePickerController:self
+                willFinishPickingThisManyMediaItems:[NSNumber numberWithInt:_assets.count]];
+        }
 
         for(ALAsset *asset in _assets) {
             @autoreleasepool {

@@ -35,14 +35,16 @@
 
 - (void)elcImagePickerController:(ELCImagePickerController *)picker willFinishPickingThisManyMediaItems:(NSNumber *)number
 {
-    for (UIView *v in [scrollview subviews]) {
-        [v removeFromSuperview];
-    }
-    workingFrame = scrollview.frame;
-    workingFrame.origin.x = 0;
-    [scrollview setPagingEnabled:YES];
-    [self dismissModalViewControllerAnimated:YES];
+    dispatch_async(dispatch_get_main_queue(), ^{
 
+        for (UIView *v in [scrollview subviews]) {
+            [v removeFromSuperview];
+        }
+        workingFrame = scrollview.frame;
+        workingFrame.origin.x = 0;
+        [scrollview setPagingEnabled:YES];
+        [self dismissModalViewControllerAnimated:YES];
+    });
 }
 
 - (void)elcImagePickerController:(ELCImagePickerController *)picker hasMediaWithInfo:(NSDictionary *)info
@@ -56,7 +58,6 @@
         [scrollview setContentSize:CGSizeMake(workingFrame.origin.x, workingFrame.size.height)];
         [imageview release];
     });
-    
 }
 
 - (void)elcImagePickerController:(ELCImagePickerController *)picker didFinishPickingMediaWithInfo:(NSArray *)info {
