@@ -24,10 +24,8 @@
 @protocol ELCImagePickerControllerDelegate
 
 
-- (void)elcImagePickerController:(ELCImagePickerController *)picker didFinishPickingMediaWithInfo:(NSArray *)info;
+- (void)elcImagePickerController:(ELCImagePickerController *)picker didFinishPickingMediaWithAssets:(NSArray *)info;
 - (void)elcImagePickerControllerDidCancel:(ELCImagePickerController *)picker;
-@optional
-- (void)elcImagePickerController:(ELCImagePickerController*)picker willFinishPickingThisManyMediaItems:(NSNumber*)number;
-- (void)elcImagePickerController:(ELCImagePickerController *)picker hasMediaWithInfo:(NSDictionary*)info;
+
 @end
 

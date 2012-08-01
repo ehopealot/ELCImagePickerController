@@ -24,32 +24,11 @@
 
 -(void)selectedAssets:(NSArray*)_assets {
     assets = _assets;
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        if ([delegate respondsToSelector:@selector(elcImagePickerController:willFinishPickingThisManyMediaItems:)]){
-            [self.delegate elcImagePickerController:self
-                willFinishPickingThisManyMediaItems:[NSNumber numberWithInt:_assets.count]];
-        }
 
-        for(ALAsset *asset in _assets) {
-            @autoreleasepool {
-                
-
-            NSMutableDictionary *workingDictionary = [[NSMutableDictionary alloc] init];
-            [workingDictionary setObject:[asset valueForProperty:ALAssetPropertyType] forKey:@"UIImagePickerControllerMediaType"];
-            [workingDictionary setObject:[[asset valueForProperty:ALAssetPropertyURLs] valueForKey:[[[asset valueForProperty:ALAssetPropertyURLs] allKeys] objectAtIndex:0]] forKey:@"UIImagePickerControllerReferenceURL"];
-            [workingDictionary setObject:asset forKey:@"ELCImagePickerControllerAsset"];
-            if([delegate respondsToSelector:@selector(elcImagePickerController:hasMediaWithInfo:)]){
-                    [delegate elcImagePickerController:self hasMediaWithInfo:workingDictionary];
-            }
-            [workingDictionary release];
-            }
-        }
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self popToRootViewControllerAnimated:NO];
-            //[[self parentViewController] dismissModalViewControllerAnimated:YES];
-        });
-
-    });
+    if ([delegate respondsToSelector:@selector(elcImagePickerController:didFinishPickingMediaWithAssets:)]){
+        [delegate elcImagePickerController:self didFinishPickingMediaWithAssets:assets];
+    }
+    [self popToRootViewControllerAnimated:NO];
 }
 
 

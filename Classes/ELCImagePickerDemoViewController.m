@@ -10,6 +10,7 @@
 #import "ELCImagePickerDemoViewController.h"
 #import "ELCImagePickerController.h"
 #import "ELCAlbumPickerController.h"
+#import <AssetsLibrary/AssetsLibrary.h>
 
 @implementation ELCImagePickerDemoViewController
 {
@@ -33,34 +34,8 @@
 
 #pragma mark ELCImagePickerControllerDelegate Methods
 
-- (void)elcImagePickerController:(ELCImagePickerController *)picker willFinishPickingThisManyMediaItems:(NSNumber *)number
-{
-    dispatch_async(dispatch_get_main_queue(), ^{
 
-        for (UIView *v in [scrollview subviews]) {
-            [v removeFromSuperview];
-        }
-        workingFrame = scrollview.frame;
-        workingFrame.origin.x = 0;
-        [scrollview setPagingEnabled:YES];
-        [self dismissModalViewControllerAnimated:YES];
-    });
-}
-
-- (void)elcImagePickerController:(ELCImagePickerController *)picker hasMediaWithInfo:(NSDictionary *)info
-{
-    dispatch_async(dispatch_get_main_queue(), ^{
-        UIImageView *imageview = [[UIImageView alloc] initWithImage:[info objectForKey:UIImagePickerControllerOriginalImage]];
-        [imageview setContentMode:UIViewContentModeScaleAspectFit];
-        imageview.frame = workingFrame;
-        [scrollview addSubview:imageview];
-        workingFrame.origin.x = workingFrame.origin.x + workingFrame.size.width;
-        [scrollview setContentSize:CGSizeMake(workingFrame.origin.x, workingFrame.size.height)];
-        [imageview release];
-    });
-}
-
-- (void)elcImagePickerController:(ELCImagePickerController *)picker didFinishPickingMediaWithInfo:(NSArray *)info {
+- (void)elcImagePickerController:(ELCImagePickerController *)picker didFinishPickingMediaWithAssets:(NSArray*)assets {
 	
 
     for (UIView *v in [scrollview subviews]) {
@@ -70,20 +45,32 @@
 	workingFrame = scrollview.frame;
 	workingFrame.origin.x = 0;
 	
-	for(NSDictionary *dict in info) {
+    [scrollview setPagingEnabled:YES];
+    [self dismissModalViewControllerAnimated:YES];
+
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        for(ALAsset *asset in assets) {
+            CGImageRef image = asset.defaultRepresentation.fullResolutionImage;
+            CGImageRetain(image);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                UIImageView *imageview = [[UIImageView alloc] initWithImage:[UIImage imageWithCGImage:image]];
+                CGImageRelease(image);
+                [imageview setContentMode:UIViewContentModeScaleAspectFit];
+                imageview.frame = workingFrame;
+                
+                [scrollview addSubview:imageview];
+                [imageview release];
+                
+                workingFrame.origin.x = workingFrame.origin.x + workingFrame.size.width;
+
+            });
+        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [scrollview setPagingEnabled:YES];
+            [scrollview setContentSize:CGSizeMake(workingFrame.origin.x, workingFrame.size.height)];
+        });
+    });
 	
-		UIImageView *imageview = [[UIImageView alloc] initWithImage:[dict objectForKey:UIImagePickerControllerOriginalImage]];
-		[imageview setContentMode:UIViewContentModeScaleAspectFit];
-		imageview.frame = workingFrame;
-		
-		[scrollview addSubview:imageview];
-		[imageview release];
-		
-		workingFrame.origin.x = workingFrame.origin.x + workingFrame.size.width;
-	}
-	
-	[scrollview setPagingEnabled:YES];
-	[scrollview setContentSize:CGSizeMake(workingFrame.origin.x, workingFrame.size.height)];
 }
 
 - (void)elcImagePickerControllerDidCancel:(ELCImagePickerController *)picker {
