@@ -30,7 +30,7 @@
 	
 	UIBarButtonItem *doneButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneAction:)] autorelease];
     UIBarButtonItem *selectAllButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(selectAllAction:)] autorelease];
-    NSArray *navigationItems = @[doneButtonItem, selectAllButtonItem];
+    NSArray *navigationItems = @[doneButtonItem];// NO SELECT ALL, selectAllButtonItem];
     [self.navigationItem setRightBarButtonItems:navigationItems];
 	[self.navigationItem setTitle:@"Loading..."];
 
