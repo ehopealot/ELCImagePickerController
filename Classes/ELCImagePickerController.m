@@ -28,7 +28,7 @@
     if ([delegate respondsToSelector:@selector(elcImagePickerController:didFinishPickingMediaWithAssets:)]){
         [delegate elcImagePickerController:self didFinishPickingMediaWithAssets:assets];
     }
-    [self popToRootViewControllerAnimated:NO];
+    //[self popToRootViewControllerAnimated:NO];
 }
 
 
