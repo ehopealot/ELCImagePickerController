@@ -141,7 +141,7 @@
     // Move me
     picker.assetGroup = [assetGroups objectAtIndex:indexPath.row];
     [picker.assetGroup setAssetsFilter:[ALAssetsFilter allPhotos]];
-    
+    picker.albumName = self.albumName;
 	[self.navigationController pushViewController:picker animated:YES];
 	[picker release];
 }
