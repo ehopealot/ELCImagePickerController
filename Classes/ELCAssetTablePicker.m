@@ -33,26 +33,26 @@ NSString * const ELCAssetTablePickerChooseAlbumButtonPressedNotification = @"ELC
 	//doneButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneAction:)] autorelease];
 //    NSArray *navigationItems = @[doneButtonItem];// NO SELECT ALL, selectAllButtonItem];
 //    [self.navigationItem setRightBarButtonItems:navigationItems];
-	[self.navigationItem setTitle:@"Loading..."];
+	[self.navigationItem setTitle:@"Pick Photos"];
     NSInteger count = self.assetGroup.numberOfAssets;
     NSInteger startNumberOfAssets = 500 + count%4;
     start = MAX(0, count-startNumberOfAssets);
     // Set up the first ~100 photos
-    NSIndexSet *indexSet = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(start, count > startNumberOfAssets ? startNumberOfAssets : count)];
-    for (int i = 0; i < start; i++){
+//    NSIndexSet *indexSet = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(start, count > startNumberOfAssets ? startNumberOfAssets : count)];
+    for (int i = 0; i < self.assetGroup.numberOfAssets; i++){
         [self.elcAssets addObject:[NSNull null]];
     }
-    [self.assetGroup enumerateAssetsAtIndexes:indexSet options:0 usingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
-        if(result == nil) 
-        {
-            return;
-        }
-        ELCAsset *elcAsset = [[[ELCAsset alloc] initWithAsset:result] autorelease];
-        [elcAsset setParent:self];
-        [self.elcAssets addObject:elcAsset];
-    }];
+//    [self.assetGroup enumerateAssetsAtIndexes:indexSet options:0 usingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
+//        if(result == nil) 
+//        {
+//            return;
+//        }
+//        ELCAsset *elcAsset = [[[ELCAsset alloc] initWithAsset:result] autorelease];
+//        [elcAsset setParent:self];
+//        [self.elcAssets addObject:elcAsset];
+//    }];
+//    [self.tableView reloadData];
     [self.tableView reloadData];
-
     [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:MAX(0,ceil(assetGroup.numberOfAssets / 4.0)-1) inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:NO];
     
     // For some reason it only scrolls about 80% through the final image... This scrolls
@@ -60,7 +60,7 @@ NSString * const ELCAssetTablePickerChooseAlbumButtonPressedNotification = @"ELC
     // sliver of the image thats covered up.
     [self.tableView setContentOffset:CGPointMake(0, self.tableView.contentOffset.y+50)];
 
-	[self performSelectorInBackground:@selector(preparePhotos) withObject:nil];
+//	[self performSelectorInBackground:@selector(preparePhotos) withObject:nil];
     self.navigationItem.hidesBackButton = YES;
     self.backButton.layer.borderColor = [UIColor colorWithRed:151.f/255.f green:151.f/255.f blue:149.f/255.f alpha:1.f].CGColor;
     self.backButton.layer.borderWidth = 1.f;
@@ -157,8 +157,26 @@ NSString * const ELCAssetTablePickerChooseAlbumButtonPressedNotification = @"ELC
     
 	int index = (_indexPath.row*4);
 	int maxIndex = (_indexPath.row*4+3);
-    
+    BOOL needsToEnumerate = NO;
 	// NSLog(@"Getting assets for %d to %d with array count %d", index, maxIndex, [assets count]);
+    for (int i = index; i < MIN(maxIndex, self.elcAssets.count); i++){
+        if ([self.elcAssets objectAtIndex:i] == [NSNull null]){
+            needsToEnumerate = YES;
+            break;
+        }
+    }
+    
+    if (needsToEnumerate){
+        [self.assetGroup enumerateAssetsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(index, MIN(maxIndex+1-index, self.elcAssets.count-index))] options:0 usingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
+            if(result == nil)
+            {
+                return;
+            }
+            ELCAsset *elcAsset = [[[ELCAsset alloc] initWithAsset:result] autorelease];
+            [elcAsset setParent:self];
+            [self.elcAssets replaceObjectAtIndex:index withObject:elcAsset];
+        }];
+    }
     
 	if(maxIndex < [self.elcAssets count]) {
         
