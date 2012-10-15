@@ -11,7 +11,7 @@
 
 @implementation ELCAlbumPickerController
 
-@synthesize parent, assetGroups, library;
+@synthesize parent, assetGroups, library, albumName=_albumName;
 
 #pragma mark -
 #pragma mark View lifecycle
@@ -69,6 +69,18 @@
                        [pool release];
                    });
 }
+
+- (void)setAlbumName:(NSString *)albumName
+{
+    [_albumName release];
+    _albumName = [albumName retain];
+    if ([self.navigationController.viewControllers.lastObject isKindOfClass:[ELCAssetTablePicker class]]){
+        ELCAssetTablePicker *picker = (id)self.navigationController.viewControllers.lastObject;
+        picker.albumName = self.albumName;
+    }
+}
+
+
 
 -(void)reloadTableView {
 	

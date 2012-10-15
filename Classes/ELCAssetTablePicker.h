@@ -7,8 +7,8 @@
 
 #import <UIKit/UIKit.h>
 #import <AssetsLibrary/AssetsLibrary.h>
-
-@interface ELCAssetTablePicker : UITableViewController
+@class ELCAsset;
+@interface ELCAssetTablePicker : UIViewController
 {
 	ALAssetsGroup *assetGroup;
 	
@@ -25,10 +25,21 @@
 @property (nonatomic, retain) NSMutableArray *elcAssets;
 @property (nonatomic, retain) IBOutlet UILabel *selectedAssetsLabel;
 @property (nonatomic) BOOL reloadData;
-
+@property (retain, nonatomic) IBOutlet UIView *footerMenuView;
+@property (assign, nonatomic) IBOutlet UITableView *tableView;
+@property (assign, nonatomic) IBOutlet UIButton *doneButton;
+@property (assign, nonatomic) IBOutlet UIButton *chooseAlbumButton;
+@property (nonatomic, retain) NSString *albumName;
+@property (assign, nonatomic) IBOutlet UIButton *backButton;
+- (IBAction)goBack:(id)sender;
 -(int)totalSelectedAssets;
 -(void)preparePhotos;
 
--(void)doneAction:(id)sender;
+-(IBAction)doneAction:(id)sender;
+- (IBAction)chooseAlbumPressed:(id)sender;
+-(void)asset:(ELCAsset*)asset selectionChanged:(BOOL)selection;
 
 @end
+
+
+extern NSString * const ELCAssetTablePickerChooseAlbumButtonPressedNotification;

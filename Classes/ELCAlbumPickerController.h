@@ -20,6 +20,7 @@
 @property (nonatomic, assign) id parent;
 @property (nonatomic, retain) NSMutableArray *assetGroups;
 @property (nonatomic, retain) ALAssetsLibrary *library;
+@property (nonatomic, retain) NSString *albumName;
 -(void)selectedAssets:(NSArray*)_assets;
 
 @end

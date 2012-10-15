@@ -9,15 +9,17 @@
 #import "ELCAssetCell.h"
 #import "ELCAsset.h"
 #import "ELCAlbumPickerController.h"
-
+#import <QuartzCore/QuartzCore.h>
+NSString * const ELCAssetTablePickerChooseAlbumButtonPressedNotification = @"ELCAssetTablePickerChooseAlbumButtonPressedNotification";
 
 @implementation ELCAssetTablePicker
 {
     NSInteger start;
+    UIBarButtonItem *doneButtonItem;
 }
 @synthesize parent;
 @synthesize selectedAssetsLabel;
-@synthesize assetGroup, elcAssets, reloadData;
+@synthesize assetGroup, doneButton, elcAssets, reloadData, footerMenuView, tableView, backButton, albumName;
 
 -(void)viewDidLoad {
     self.reloadData = YES;
@@ -28,16 +30,13 @@
     self.elcAssets = tempArray;
     [tempArray release];
 	
-	UIBarButtonItem *doneButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneAction:)] autorelease];
-    UIBarButtonItem *selectAllButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(selectAllAction:)] autorelease];
-    NSArray *navigationItems = @[doneButtonItem];// NO SELECT ALL, selectAllButtonItem];
-    [self.navigationItem setRightBarButtonItems:navigationItems];
+	//doneButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneAction:)] autorelease];
+//    NSArray *navigationItems = @[doneButtonItem];// NO SELECT ALL, selectAllButtonItem];
+//    [self.navigationItem setRightBarButtonItems:navigationItems];
 	[self.navigationItem setTitle:@"Loading..."];
-
     NSInteger count = self.assetGroup.numberOfAssets;
-    NSInteger startNumberOfAssets = 96 + count%4;
+    NSInteger startNumberOfAssets = 500 + count%4;
     start = MAX(0, count-startNumberOfAssets);
-    
     // Set up the first ~100 photos
     NSIndexSet *indexSet = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(start, count > startNumberOfAssets ? startNumberOfAssets : count)];
     for (int i = 0; i < start; i++){
@@ -62,7 +61,30 @@
     [self.tableView setContentOffset:CGPointMake(0, self.tableView.contentOffset.y+50)];
 
 	[self performSelectorInBackground:@selector(preparePhotos) withObject:nil];
-    
+    self.navigationItem.hidesBackButton = YES;
+    self.backButton.layer.borderColor = [UIColor colorWithRed:151.f/255.f green:151.f/255.f blue:149.f/255.f alpha:1.f].CGColor;
+    self.backButton.layer.borderWidth = 1.f;
+    self.backButton.layer.cornerRadius = 5.f;
+    self.chooseAlbumButton.layer.cornerRadius = 5.f;
+    self.backButton.titleLabel.font = [UIFont fontWithName:@"Gotham-Book" size:18.f];
+    self.chooseAlbumButton.titleLabel.font = [UIFont fontWithName:@"Gotham-Bold" size:18.f];
+
+}
+
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    if (self.albumName){
+        [self.chooseAlbumButton setTitle:self.albumName forState:UIControlStateNormal];
+        if (self.totalSelectedAssets > 0){
+            self.doneButton.enabled = YES;
+        }else {
+            self.doneButton.enabled = NO;
+        }
+    } else {
+        [self.chooseAlbumButton setTitle:@"Choose Album" forState:UIControlStateNormal];
+        self.doneButton.enabled = NO;
+    }
 }
 
 -(void)preparePhotos {
@@ -84,7 +106,6 @@
     }];
     NSLog(@"done enumerating photos");
     [self.navigationItem performSelectorOnMainThread:@selector(setTitle:) withObject:@"Pick Photos" waitUntilDone:NO];
-    
     [pool release];
 
 }
@@ -110,10 +131,14 @@
     {		
 		if(elcAsset != (id)[NSNull null] && [elcAsset selected]) {
 			
-			[selectedAssetsImages addObject:[elcAsset asset]];
+			[selectedAssetsImages insertObject:[elcAsset asset] atIndex:0];
 		}
 	}
     [(ELCAlbumPickerController*)self.parent selectedAssets:selectedAssetsImages];
+}
+
+- (IBAction)chooseAlbumPressed:(id)sender {
+    [[NSNotificationCenter defaultCenter] postNotificationName:ELCAssetTablePickerChooseAlbumButtonPressedNotification object:self];
 }
 
 #pragma mark UITableViewDataSource Delegate Methods
@@ -168,11 +193,11 @@
 }
 
 // Customize the appearance of table view cells.
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (UITableViewCell *)tableView:(UITableView *)theTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     static NSString *CellIdentifier = @"Cell";
         
-    ELCAssetCell *cell = (ELCAssetCell*)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    ELCAssetCell *cell = (ELCAssetCell*)[theTableView dequeueReusableCellWithIdentifier:CellIdentifier];
 
     NSMutableArray *assets = [[self assetsForIndexPath:indexPath] mutableCopy];
     [assets removeObjectIdenticalTo:[NSNull null]];
@@ -194,19 +219,32 @@
 	return 79;
 }
 
+- (IBAction)goBack:(id)sender {
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
 - (int)totalSelectedAssets {
     
     int count = 0;
     
     for(ELCAsset *asset in self.elcAssets) 
     {
-		if([asset selected]) 
+		if(!((id)asset == [NSNull null]) &&  [asset selected])
         {            
             count++;	
 		}
 	}
     
     return count;
+}
+
+- (void)asset:(ELCAsset *)asset selectionChanged:(BOOL)selection
+{
+    if (!self.albumName || self.totalSelectedAssets <= 0 ){
+        self.doneButton.enabled = NO;
+    } else {
+        self.doneButton.enabled = YES;
+    }
 }
 
 - (void)dealloc 
@@ -216,4 +254,11 @@
     [super dealloc];    
 }
 
+- (void)viewDidUnload {
+    [self setFooterMenuView:nil];
+    [self setDoneButton:nil];
+    [self setChooseAlbumButton:nil];
+    [self setDoneButton:nil];
+    [super viewDidUnload];
+}
 @end
