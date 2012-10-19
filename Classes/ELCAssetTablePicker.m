@@ -11,6 +11,8 @@
 #import "ELCAlbumPickerController.h"
 #import <QuartzCore/QuartzCore.h>
 NSString * const ELCAssetTablePickerChooseAlbumButtonPressedNotification = @"ELCAssetTablePickerChooseAlbumButtonPressedNotification";
+NSString * const ELCAssetTablePickerBecameVisibleNotification = @"ELCAssetTablePickerBecameVisibleNotification";
+NSString * const ELCAssetTablePickerChangedLocationPreferenceNotification = @"ELCAssetTablePickerChangedLocationPreferenceNotification";
 
 @implementation ELCAssetTablePicker
 {
@@ -19,7 +21,7 @@ NSString * const ELCAssetTablePickerChooseAlbumButtonPressedNotification = @"ELC
 }
 @synthesize parent;
 @synthesize selectedAssetsLabel;
-@synthesize assetGroup, doneButton, elcAssets, reloadData, footerMenuView, tableView, backButton, albumName;
+@synthesize assetGroup, doneButton, elcAssets, reloadData, footerMenuView, tableView, backButton, albumName, locationButton;
 
 -(void)viewDidLoad {
     self.reloadData = YES;
@@ -66,14 +68,13 @@ NSString * const ELCAssetTablePickerChooseAlbumButtonPressedNotification = @"ELC
     self.backButton.layer.borderWidth = 1.f;
     self.backButton.layer.cornerRadius = 5.f;
     self.chooseAlbumButton.layer.cornerRadius = 5.f;
-    self.backButton.titleLabel.font = [UIFont fontWithName:@"Gotham-Book" size:18.f];
-    self.chooseAlbumButton.titleLabel.font = [UIFont fontWithName:@"Gotham-Bold" size:18.f];
 
 }
 
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    [[NSNotificationCenter defaultCenter] postNotificationName:ELCAssetTablePickerBecameVisibleNotification object:self];
     if (self.albumName){
         [self.chooseAlbumButton setTitle:self.albumName forState:UIControlStateNormal];
         if (self.totalSelectedAssets > 0){
@@ -241,6 +242,11 @@ NSString * const ELCAssetTablePickerChooseAlbumButtonPressedNotification = @"ELC
     [self.navigationController popViewControllerAnimated:YES];
 }
 
+- (IBAction)locationButtonPressed:(id)sender {
+    self.locationButton.selected = !self.locationButton.selected;
+    [[NSNotificationCenter defaultCenter] postNotificationName:ELCAssetTablePickerChangedLocationPreferenceNotification object:self userInfo:@{@"LOCATION":@(!self.locationButton.selected)}];
+}
+
 - (int)totalSelectedAssets {
     
     int count = 0;
@@ -277,6 +283,7 @@ NSString * const ELCAssetTablePickerChooseAlbumButtonPressedNotification = @"ELC
     [self setDoneButton:nil];
     [self setChooseAlbumButton:nil];
     [self setDoneButton:nil];
+    [self setLocationButton:nil];
     [super viewDidUnload];
 }
 @end

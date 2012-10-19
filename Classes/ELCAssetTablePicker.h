@@ -31,7 +31,9 @@
 @property (assign, nonatomic) IBOutlet UIButton *chooseAlbumButton;
 @property (nonatomic, retain) NSString *albumName;
 @property (assign, nonatomic) IBOutlet UIButton *backButton;
+@property (assign, nonatomic) IBOutlet UIButton *locationButton;
 - (IBAction)goBack:(id)sender;
+- (IBAction)locationButtonPressed:(id)sender;
 -(int)totalSelectedAssets;
 -(void)preparePhotos;
 
@@ -43,3 +45,5 @@
 
 
 extern NSString * const ELCAssetTablePickerChooseAlbumButtonPressedNotification;
+extern NSString * const ELCAssetTablePickerBecameVisibleNotification;
+extern NSString * const ELCAssetTablePickerChangedLocationPreferenceNotification;
