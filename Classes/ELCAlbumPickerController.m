@@ -85,7 +85,7 @@
 -(void)reloadTableView {
 	
 	[self.tableView reloadData];
-	[self.navigationItem setTitle:@"Choose an Album"];
+	[self.navigationItem setTitle:@"Photo Library"];
 }
 
 -(void)selectedAssets:(NSArray*)_assets {
