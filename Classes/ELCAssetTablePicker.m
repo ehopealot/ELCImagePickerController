@@ -76,16 +76,18 @@ NSString * const ELCAssetTablePickerChangedLocationPreferenceNotification = @"EL
     [super viewWillAppear:animated];
     [[NSNotificationCenter defaultCenter] postNotificationName:ELCAssetTablePickerBecameVisibleNotification object:self];
     if (self.albumName){
-        [self.chooseAlbumButton setTitle:self.albumName forState:UIControlStateNormal];
-        if (self.totalSelectedAssets > 0){
-            self.doneButton.enabled = YES;
-        }else {
-            self.doneButton.enabled = NO;
-        }
+        [self.chooseAlbumButton setTitle:[NSString stringWithFormat:@"%@", self.albumName] forState:UIControlStateNormal];
+        [self.doneButton setImage:[UIImage imageNamed:@"green_check.png"] forState:UIControlStateNormal];
     } else {
-        [self.chooseAlbumButton setTitle:@"Choose Album" forState:UIControlStateNormal];
+        [self.chooseAlbumButton setTitle:@"New Album" forState:UIControlStateNormal];
+        [self.doneButton setImage:[UIImage imageNamed:@"green_caret.png"] forState:UIControlStateNormal];
+    }
+    if (self.totalSelectedAssets > 0){
+        self.doneButton.enabled = YES;
+    }else {
         self.doneButton.enabled = NO;
     }
+
 }
 
 -(void)preparePhotos {
@@ -264,7 +266,7 @@ NSString * const ELCAssetTablePickerChangedLocationPreferenceNotification = @"EL
 
 - (void)asset:(ELCAsset *)asset selectionChanged:(BOOL)selection
 {
-    if (!self.albumName || self.totalSelectedAssets <= 0 ){
+    if (self.totalSelectedAssets <= 0 ){
         self.doneButton.enabled = NO;
     } else {
         self.doneButton.enabled = YES;
