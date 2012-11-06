@@ -44,17 +44,11 @@
 }
 
 -(void)toggleSelection {
-    
+    if([(ELCAssetTablePicker*)self.parent totalSelectedAssets] >= 25 && overlayView.hidden) {
+        return;
+    }
 	overlayView.hidden = !overlayView.hidden;
     [(ELCAssetTablePicker*)self.parent asset:self selectionChanged:self.selected];
-//    if([(ELCAssetTablePicker*)self.parent totalSelectedAssets] >= 10) {
-//        
-//        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Maximum Reached" message:@"" delegate:self cancelButtonTitle:nil otherButtonTitles:@"Ok", nil];
-//		[alert show];
-//		[alert release];	
-//
-//        [(ELCAssetTablePicker*)self.parent doneAction:nil];
-//    }
 }
 
 -(BOOL)selected {
