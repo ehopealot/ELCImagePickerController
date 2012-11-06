@@ -36,7 +36,7 @@
     dispatch_async(dispatch_get_main_queue(), ^
                    {
                        NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-                       
+                       __block BOOL foundCameraRoll = NO;
                        // Group enumerator Block
                        void (^assetGroupEnumerator)(ALAssetsGroup *, BOOL *) = ^(ALAssetsGroup *group, BOOL *stop)
                        {
@@ -44,10 +44,18 @@
                            {
                                return;
                            }
+                           
+                           
                            if (group.numberOfAssets > 0){
-                               [self.assetGroups insertObject:group atIndex:0];
+                               NSInteger index = foundCameraRoll ? 1 : 0;
+                               [self.assetGroups insertObject:group atIndex:index];
                            }
+                           if ([[group valueForProperty:ALAssetsGroupPropertyType] intValue] == ALAssetsGroupSavedPhotos){
+                               foundCameraRoll = YES;
+                           }
+
                            // Reload albums
+                           
                            [self performSelectorOnMainThread:@selector(reloadTableView) withObject:nil waitUntilDone:YES];
                        };
                        
