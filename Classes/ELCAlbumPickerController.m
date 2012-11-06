@@ -54,7 +54,7 @@
                        // Group Enumerator Failure Block
                        void (^assetGroupEnumberatorFailure)(NSError *) = ^(NSError *error) {
                            
-                           UIAlertView * alert = [[UIAlertView alloc] initWithTitle:@"Error" message:[NSString stringWithFormat:@"Please turn on Location Services for piqtify!"] delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil];
+                           UIAlertView * alert = [[UIAlertView alloc] initWithTitle:@"No Photo Library Access" message:[NSString stringWithFormat:@"In your iOS privacy settings, please allow Colugo access to your Photos."] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
                            [alert show];
                            [alert release];
                            
