@@ -32,6 +32,7 @@
 @property (nonatomic, retain) NSString *albumName;
 @property (assign, nonatomic) IBOutlet UIButton *backButton;
 @property (assign, nonatomic) IBOutlet UIButton *locationButton;
+@property (assign, nonatomic) UILabel *counterLabel;
 - (IBAction)goBack:(id)sender;
 - (IBAction)locationButtonPressed:(id)sender;
 -(int)totalSelectedAssets;

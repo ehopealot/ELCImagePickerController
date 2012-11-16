@@ -21,7 +21,7 @@ NSString * const ELCAssetTablePickerChangedLocationPreferenceNotification = @"EL
 }
 @synthesize parent;
 @synthesize selectedAssetsLabel;
-@synthesize assetGroup, doneButton, elcAssets, reloadData, footerMenuView, tableView, backButton, albumName, locationButton;
+@synthesize assetGroup, doneButton, elcAssets, reloadData, footerMenuView, tableView, backButton, albumName, locationButton, counterLabel;
 
 -(void)viewDidLoad {
     self.reloadData = YES;
@@ -68,7 +68,17 @@ NSString * const ELCAssetTablePickerChangedLocationPreferenceNotification = @"EL
     self.backButton.layer.borderWidth = 1.f;
     self.backButton.layer.cornerRadius = 5.f;
     self.chooseAlbumButton.layer.cornerRadius = 5.f;
-
+    UILabel *myCounterLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 80.f, 40.f)];
+    myCounterLabel.text = @"0/25";
+    myCounterLabel.font = [UIFont fontWithName:@"Gotham-Book" size:14.f];
+    myCounterLabel.textColor = [UIColor colorWithRed:250.f/255.f green:250.f/255.f blue:250.f/255.f alpha:1.f];
+    myCounterLabel.textAlignment = UITextAlignmentRight;
+    myCounterLabel.backgroundColor = [UIColor clearColor];
+    UIBarButtonItem *barButtonItem = [[UIBarButtonItem alloc] initWithCustomView:myCounterLabel];
+    self.navigationItem.rightBarButtonItem = barButtonItem;
+    [barButtonItem release];
+    self.counterLabel = myCounterLabel;
+    [myCounterLabel release];
 }
 
 -(void)viewWillAppear:(BOOL)animated
@@ -260,17 +270,18 @@ NSString * const ELCAssetTablePickerChangedLocationPreferenceNotification = @"EL
             count++;	
 		}
 	}
-    
     return count;
 }
 
 - (void)asset:(ELCAsset *)asset selectionChanged:(BOOL)selection
 {
-    if (self.totalSelectedAssets <= 0 ){
+    NSInteger numberOfSelectedAssets = self.totalSelectedAssets;
+    if (numberOfSelectedAssets <= 0 ){
         self.doneButton.enabled = NO;
     } else {
         self.doneButton.enabled = YES;
     }
+    self.counterLabel.text = [NSString stringWithFormat:@"%i/25", numberOfSelectedAssets];
 }
 
 - (void)dealloc 
