@@ -79,6 +79,7 @@ NSString * const ELCAssetTablePickerChangedLocationPreferenceNotification = @"EL
     [barButtonItem release];
     self.counterLabel = myCounterLabel;
     [myCounterLabel release];
+    self.doneButton.layer.cornerRadius = 5.f;
 }
 
 -(void)viewWillAppear:(BOOL)animated
@@ -93,9 +94,9 @@ NSString * const ELCAssetTablePickerChangedLocationPreferenceNotification = @"EL
         [self.doneButton setImage:[UIImage imageNamed:@"green_caret.png"] forState:UIControlStateNormal];
     }
     if (self.totalSelectedAssets > 0){
-        self.doneButton.enabled = YES;
+        [self enableDoneButton:YES];
     }else {
-        self.doneButton.enabled = NO;
+        [self enableDoneButton:NO];
     }
 
 }
@@ -273,13 +274,20 @@ NSString * const ELCAssetTablePickerChangedLocationPreferenceNotification = @"EL
     return count;
 }
 
+- (void)enableDoneButton:(BOOL)enabled
+{
+    self.doneButton.enabled = enabled;
+    self.doneButton.hidden = !enabled;
+}
+
 - (void)asset:(ELCAsset *)asset selectionChanged:(BOOL)selection
 {
     NSInteger numberOfSelectedAssets = self.totalSelectedAssets;
     if (numberOfSelectedAssets <= 0 ){
-        self.doneButton.enabled = NO;
+        [self enableDoneButton:NO];
+
     } else {
-        self.doneButton.enabled = YES;
+        [self enableDoneButton:YES];
     }
     self.counterLabel.text = [NSString stringWithFormat:@"%i/25", numberOfSelectedAssets];
 }
