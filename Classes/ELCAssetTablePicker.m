@@ -35,7 +35,7 @@ NSString * const ELCAssetTablePickerChangedLocationPreferenceNotification = @"EL
 	//doneButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneAction:)] autorelease];
 //    NSArray *navigationItems = @[doneButtonItem];// NO SELECT ALL, selectAllButtonItem];
 //    [self.navigationItem setRightBarButtonItems:navigationItems];
-	[self.navigationItem setTitle:@"Pick Photos"];
+	[self.navigationItem setTitle:self.pickVideo?@"Pick A Video": @"Pick Photos"];
     NSInteger count = self.assetGroup.numberOfAssets;
     NSInteger startNumberOfAssets = 500 + count%4;
     start = MAX(0, count-startNumberOfAssets);
@@ -69,7 +69,11 @@ NSString * const ELCAssetTablePickerChangedLocationPreferenceNotification = @"EL
     self.backButton.layer.cornerRadius = 5.f;
     self.chooseAlbumButton.layer.cornerRadius = 5.f;
     UILabel *myCounterLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 80.f, 40.f)];
-    myCounterLabel.text = @"0/25";
+    if (self.pickVideo){
+        myCounterLabel.text = @"0/1";
+    } else {
+        myCounterLabel.text = @"0/25";
+    }
     myCounterLabel.font = [UIFont fontWithName:@"Gotham-Book" size:14.f];
     myCounterLabel.textColor = [UIColor colorWithRed:250.f/255.f green:250.f/255.f blue:250.f/255.f alpha:1.f];
     myCounterLabel.textAlignment = UITextAlignmentRight;
@@ -241,8 +245,6 @@ NSString * const ELCAssetTablePickerChangedLocationPreferenceNotification = @"EL
     {		
 		[cell setAssets:assets];
 	}
-
-    
     return cell;
 }
 
@@ -289,7 +291,7 @@ NSString * const ELCAssetTablePickerChangedLocationPreferenceNotification = @"EL
     } else {
         [self enableDoneButton:YES];
     }
-    self.counterLabel.text = [NSString stringWithFormat:@"%i/25", numberOfSelectedAssets];
+    self.counterLabel.text = [NSString stringWithFormat:@"%i/%@", numberOfSelectedAssets, self.pickVideo? @1 : @25];
 }
 
 - (void)dealloc 

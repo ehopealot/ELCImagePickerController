@@ -45,7 +45,7 @@
                                return;
                            }
                            
-                           
+                           [group setAssetsFilter:[self assetsFilter]];
                            if (group.numberOfAssets > 0){
                                NSInteger index = foundCameraRoll ? 1 : 0;
                                [self.assetGroups insertObject:group atIndex:index];
@@ -115,6 +115,14 @@
     return [assetGroups count];
 }
 
+- (ALAssetsFilter*)assetsFilter
+{
+    if (self.pickVideo){
+        return [ALAssetsFilter allVideos];
+    } else {
+        return [ALAssetsFilter allPhotos];
+    }
+}
 
 // Customize the appearance of table view cells.
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -128,7 +136,7 @@
     
     // Get count
     ALAssetsGroup *g = (ALAssetsGroup*)[assetGroups objectAtIndex:indexPath.row];
-    [g setAssetsFilter:[ALAssetsFilter allPhotos]];
+    [g setAssetsFilter:[self assetsFilter]];
     NSInteger gCount = [g numberOfAssets];
     
     cell.textLabel.text = [NSString stringWithFormat:@"%@ (%d)",[g valueForProperty:ALAssetsGroupPropertyName], gCount];
@@ -153,8 +161,9 @@
     
     // Move me
     picker.assetGroup = [assetGroups objectAtIndex:indexPath.row];
-    [picker.assetGroup setAssetsFilter:[ALAssetsFilter allPhotos]];
+    [picker.assetGroup setAssetsFilter:[self assetsFilter]];
     picker.albumName = self.albumName;
+    picker.pickVideo = self.pickVideo;
 	[self.navigationController pushViewController:picker animated:YES];
 	[picker release];
 }

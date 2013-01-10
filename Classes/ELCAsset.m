@@ -44,7 +44,8 @@
 }
 
 -(void)toggleSelection {
-    if([(ELCAssetTablePicker*)self.parent totalSelectedAssets] >= 25 && overlayView.hidden) {
+    ELCAssetTablePicker *myParent = (ELCAssetTablePicker*)self.parent;
+    if([myParent totalSelectedAssets] >= (myParent.pickVideo ? 1 : 25) && overlayView.hidden) {
         return;
     }
 	overlayView.hidden = !overlayView.hidden;

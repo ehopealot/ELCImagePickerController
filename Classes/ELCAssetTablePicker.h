@@ -33,6 +33,7 @@
 @property (assign, nonatomic) IBOutlet UIButton *backButton;
 @property (assign, nonatomic) IBOutlet UIButton *locationButton;
 @property (assign, nonatomic) UILabel *counterLabel;
+@property (nonatomic) BOOL pickVideo;
 - (IBAction)goBack:(id)sender;
 - (IBAction)locationButtonPressed:(id)sender;
 -(int)totalSelectedAssets;

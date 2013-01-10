@@ -21,6 +21,7 @@
 @property (nonatomic, retain) NSMutableArray *assetGroups;
 @property (nonatomic, retain) ALAssetsLibrary *library;
 @property (nonatomic, retain) NSString *albumName;
+@property (nonatomic) BOOL pickVideo;
 -(void)selectedAssets:(NSArray*)_assets;
 
 @end
