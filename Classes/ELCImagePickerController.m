@@ -22,11 +22,11 @@
 	}
 }
 
--(void)selectedAssets:(NSArray*)_assets {
+-(void)selectedAssets:(NSArray*)_assets caption:(NSString *)caption{
     assets = _assets;
 
-    if ([delegate respondsToSelector:@selector(elcImagePickerController:didFinishPickingMediaWithAssets:)]){
-        [delegate elcImagePickerController:self didFinishPickingMediaWithAssets:assets];
+    if ([delegate respondsToSelector:@selector(elcImagePickerController:didFinishPickingMediaWithAssets:caption:)]){
+        [delegate elcImagePickerController:self didFinishPickingMediaWithAssets:assets caption:caption];
     }
     //[self popToRootViewControllerAnimated:NO];
 }

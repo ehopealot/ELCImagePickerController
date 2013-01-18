@@ -22,7 +22,7 @@
 @property (nonatomic, retain) ALAssetsLibrary *library;
 @property (nonatomic, retain) NSString *albumName;
 @property (nonatomic) BOOL pickVideo;
--(void)selectedAssets:(NSArray*)_assets;
+-(void)selectedAssets:(NSArray*)_assets caption:(NSString*)caption;
 
 @end
 

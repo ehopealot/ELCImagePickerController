@@ -96,9 +96,9 @@
 	[self.navigationItem setTitle:@"Photo Library"];
 }
 
--(void)selectedAssets:(NSArray*)_assets {
+-(void)selectedAssets:(NSArray*)_assets caption:(NSString *)caption{
 	
-	[(ELCImagePickerController*)parent selectedAssets:_assets];
+	[(ELCImagePickerController*)parent selectedAssets:_assets caption:caption];
 }
 
 #pragma mark -

@@ -18,6 +18,7 @@ NSString * const ELCAssetTablePickerChangedLocationPreferenceNotification = @"EL
 {
     NSInteger start;
     UIBarButtonItem *doneButtonItem;
+    BOOL captionViewShown;
 }
 @synthesize parent;
 @synthesize selectedAssetsLabel;
@@ -84,6 +85,7 @@ NSString * const ELCAssetTablePickerChangedLocationPreferenceNotification = @"EL
     self.counterLabel = myCounterLabel;
     [myCounterLabel release];
     self.doneButton.layer.cornerRadius = 5.f;
+    captionViewShown = YES;
 }
 
 -(void)viewWillAppear:(BOOL)animated
@@ -102,7 +104,17 @@ NSString * const ELCAssetTablePickerChangedLocationPreferenceNotification = @"EL
     }else {
         [self enableDoneButton:NO];
     }
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardAppeared:) name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDisappeared:) name:UIKeyboardWillHideNotification object:nil];
 
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
 }
 
 -(void)preparePhotos {
@@ -128,19 +140,6 @@ NSString * const ELCAssetTablePickerChangedLocationPreferenceNotification = @"EL
 
 }
 
-- (void)selectAllAction:(id)sender
-{
-    NSMutableArray *selectedAssetsImages = [[[NSMutableArray alloc] init] autorelease];
-    NSArray *currentlyLoadedAssets = [self.elcAssets copy];
-    for (ELCAsset *asset in currentlyLoadedAssets)
-    {
-        if(asset != (id)[NSNull null]){
-           [selectedAssetsImages addObject:[asset asset]];
-        }
-    }
-    [(ELCAlbumPickerController*)self.parent selectedAssets:selectedAssetsImages];
-}
-
 - (void) doneAction:(id)sender {
 	
 	NSMutableArray *selectedAssetsImages = [[[NSMutableArray alloc] init] autorelease];
@@ -152,7 +151,11 @@ NSString * const ELCAssetTablePickerChangedLocationPreferenceNotification = @"EL
 			[selectedAssetsImages insertObject:[elcAsset asset] atIndex:0];
 		}
 	}
-    [(ELCAlbumPickerController*)self.parent selectedAssets:selectedAssetsImages];
+    NSString *caption = nil;
+    if (captionViewShown && [self.captionView.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]].length > 0){
+        caption = [self.captionView.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    }
+    [(ELCAlbumPickerController*)self.parent selectedAssets:selectedAssetsImages caption:caption];
 }
 
 - (IBAction)chooseAlbumPressed:(id)sender {
@@ -287,11 +290,42 @@ NSString * const ELCAssetTablePickerChangedLocationPreferenceNotification = @"EL
     NSInteger numberOfSelectedAssets = self.totalSelectedAssets;
     if (numberOfSelectedAssets <= 0 ){
         [self enableDoneButton:NO];
-
     } else {
         [self enableDoneButton:YES];
     }
+    if (numberOfSelectedAssets <= 1 && !captionViewShown){
+        [self showCaptionField];
+    } else if (captionViewShown && numberOfSelectedAssets > 1){
+        [self hideCaptionField];
+    }
+    
     self.counterLabel.text = [NSString stringWithFormat:@"%i/%@", numberOfSelectedAssets, self.pickVideo? @1 : @25];
+}
+
+- (void)showCaptionField
+{
+    CGRect myTableviewFrame = self.tableView.frame;
+    CGRect myCaptionViewFrame = self.captionView.frame;
+    myTableviewFrame.size.height -= myCaptionViewFrame.size.height;
+    myCaptionViewFrame.origin.y -= myCaptionViewFrame.size.height;
+    [UIView animateWithDuration:.25 animations:^{
+        self.tableView.frame = myTableviewFrame;
+        self.captionView.frame = myCaptionViewFrame;
+    }];
+    captionViewShown = YES;
+}
+
+- (void)hideCaptionField
+{
+    CGRect myTableviewFrame = self.tableView.frame;
+    CGRect myCaptionViewFrame = self.captionView.frame;
+    myTableviewFrame.size.height += myCaptionViewFrame.size.height;
+    myCaptionViewFrame.origin.y += myCaptionViewFrame.size.height;
+    [UIView animateWithDuration:.25 animations:^{
+        self.tableView.frame = myTableviewFrame;
+        self.captionView.frame = myCaptionViewFrame;
+    }];
+    captionViewShown = NO;
 }
 
 - (void)dealloc 
@@ -307,6 +341,35 @@ NSString * const ELCAssetTablePickerChangedLocationPreferenceNotification = @"EL
     [self setChooseAlbumButton:nil];
     [self setDoneButton:nil];
     [self setLocationButton:nil];
+    [self setCaptionView:nil];
     [super viewDidUnload];
 }
+
+- (void)keyboardAppeared:(NSNotification*)notification
+{
+    CGRect newFrame = self.captionView.frame;
+    newFrame.origin.y = self.view.frame.size.height - [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue].size.height - newFrame.size.height;
+    self.tableView.userInteractionEnabled = NO;
+    [UIView animateWithDuration:.25f animations:^{
+        self.captionView.frame = newFrame;
+    }];
+}
+
+- (void)keyboardDisappeared:(NSNotification*)notification
+{
+    self.tableView.userInteractionEnabled = YES;
+    [UIView animateWithDuration:.25f animations:^{
+        CGRect newFrame = self.captionView.frame;
+        newFrame.origin.y = CGRectGetMaxY(self.tableView.frame);
+        self.captionView.frame = newFrame;
+    }];
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    [textField resignFirstResponder];
+    
+    return NO;
+}
+
 @end

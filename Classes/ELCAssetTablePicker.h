@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 #import <AssetsLibrary/AssetsLibrary.h>
 @class ELCAsset;
-@interface ELCAssetTablePicker : UIViewController
+@interface ELCAssetTablePicker : UIViewController <UITextFieldDelegate>
 {
 	ALAssetsGroup *assetGroup;
 	
@@ -34,6 +34,7 @@
 @property (assign, nonatomic) IBOutlet UIButton *locationButton;
 @property (assign, nonatomic) UILabel *counterLabel;
 @property (nonatomic) BOOL pickVideo;
+@property (assign, nonatomic) IBOutlet UITextField *captionView;
 - (IBAction)goBack:(id)sender;
 - (IBAction)locationButtonPressed:(id)sender;
 -(int)totalSelectedAssets;
