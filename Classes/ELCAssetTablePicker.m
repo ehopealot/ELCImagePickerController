@@ -309,8 +309,9 @@ NSString * const ELCAssetTablePickerChangedLocationPreferenceNotification = @"EL
     myTableviewFrame.size.height -= myCaptionViewFrame.size.height;
     myCaptionViewFrame.origin.y -= myCaptionViewFrame.size.height;
     [UIView animateWithDuration:.25 animations:^{
-        self.tableView.frame = myTableviewFrame;
         self.captionView.frame = myCaptionViewFrame;
+    } completion:^(BOOL finished) {
+        self.tableView.frame = myTableviewFrame;
     }];
     captionViewShown = YES;
 }
@@ -322,8 +323,9 @@ NSString * const ELCAssetTablePickerChangedLocationPreferenceNotification = @"EL
     myTableviewFrame.size.height += myCaptionViewFrame.size.height;
     myCaptionViewFrame.origin.y += myCaptionViewFrame.size.height;
     [UIView animateWithDuration:.25 animations:^{
-        self.tableView.frame = myTableviewFrame;
         self.captionView.frame = myCaptionViewFrame;
+    } completion:^(BOOL finished) {
+        self.tableView.frame = myTableviewFrame;
     }];
     captionViewShown = NO;
 }
