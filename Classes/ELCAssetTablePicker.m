@@ -75,7 +75,7 @@ NSString * const ELCAssetTablePickerChangedLocationPreferenceNotification = @"EL
     } else {
         myCounterLabel.text = @"0/25";
     }
-    myCounterLabel.font = [UIFont fontWithName:@"Gotham-Book" size:14.f];
+    myCounterLabel.font = [UIFont fontWithName:@"ProximaNova-Regular" size:14.f];
     myCounterLabel.textColor = [UIColor colorWithRed:250.f/255.f green:250.f/255.f blue:250.f/255.f alpha:1.f];
     myCounterLabel.textAlignment = UITextAlignmentRight;
     myCounterLabel.backgroundColor = [UIColor clearColor];

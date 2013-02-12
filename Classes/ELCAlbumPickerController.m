@@ -140,7 +140,7 @@
     NSInteger gCount = [g numberOfAssets];
     
     cell.textLabel.text = [NSString stringWithFormat:@"%@ (%d)",[g valueForProperty:ALAssetsGroupPropertyName], gCount];
-    cell.textLabel.font = [UIFont fontWithName:@"GothamHTF-BookCondensed" size:33.f];
+    cell.textLabel.font = [UIFont fontWithName:@"ProximaNova-Bold" size:33.f];
     cell.textLabel.textColor = [UIColor colorWithRed:250.f green:250.f blue:250.f alpha:1.f];
     cell.textLabel.backgroundColor = [UIColor clearColor];
     cell.backgroundView =[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"iOS_album_cell.png"]];
